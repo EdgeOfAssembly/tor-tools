@@ -121,8 +121,8 @@ Cookie auth works if:
 
 ## Files
 
-- `tor_control.cpp` + binary
-- `tor_top.cpp` + binary
+- `tor_control.cpp`
+- `tor_top.cpp`
 - `Makefile`
 - `tor_control.1`, `tor_top.1` — man pages (install with your distro's tools or `install -m 644 ... /usr/local/share/man/man1/`)
 - `progress_bar.h` — small ANSI progress bar helper (used by tor_top during data fetch)

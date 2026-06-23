@@ -5,8 +5,8 @@
 // Compile: g++ -std=c++23 -O2 -Wall -Wextra -o tor_control tor_control.cpp
 // Usage: ./tor_control --help
 //
-// Requires: password.txt (control password, one line) or cookie access via sudo -n.
-// For torrc edits and restart: sudo nopass or sudo password in password.txt (see --sudo-with-pass).
+// Requires: control password or cookie access via sudo -n.
+// For torrc edits and restart: sudo nopass or sudo password (see --sudo-with-pass).
 // On Gentoo: uses /etc/init.d/tor and /etc/tor/torrc .
 
 #include <algorithm>
@@ -271,7 +271,7 @@ public:
         return dd / "cached-consensus"; // fallback name on some setups
     }
 
-    // Read control password: CLI > env > (no longer defaulting to password.txt for normal users)
+    // Read control password: CLI > env
     std::string get_control_password() const {
         if (!cfg_.control_password.empty()) return cfg_.control_password;
         const char* env = std::getenv("TOR_CONTROL_PASSWORD");
@@ -797,7 +797,7 @@ EXAMPLES:
   tor_control --control-password MySecret status
   TOR_CONTROL_PASSWORD=MySecret tor_control list-nodes --top 20 --exit --country us --min-bw 8000
 
-  # Generate a strict fast-exit config (no password.txt involved)
+  # Generate a strict fast-exit config
   tor_control generate-torrc --exit --country us,ca --min-bw 10000 --strict --top 150 > my.torrc
 
   # Apply it (sudo will prompt for YOUR password unless you configured sudoers)
@@ -813,7 +813,6 @@ EXAMPLES:
   tor_control build-circuit --fast --exit --country de
 
 Note for normal users:
-- password.txt is NOT used or required. It was only for the original development environment.
 - For cookie auth without typing a password every time, add your user to the 'tor' (or 'debian-tor') group
   and make the cookie group-readable. Then --control-password is not needed.
 - Restart/torrc editing uses "sudo <your --restart-cmd>". Configure /etc/sudoers if you want passwordless.
@@ -834,7 +833,7 @@ int main(int argc, char** argv) {
     bool do_restart = false;
     std::string subcmd;
 
-    // Simple arg parse (portable, no password.txt required for normal use)
+    // Simple arg parse
     for (int i=1; i<argc; ++i) {
         std::string a = argv[i];
         if (a == "--help" || a == "-h") { print_help(); return 0; }
@@ -881,7 +880,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    // Portable defaults from environment (no password.txt, works on any distro)
+    // Portable defaults from environment
     if (cfg.restart_cmd == DEFAULT_RESTART_CMD) {
         if (const char* env = std::getenv("TOR_RESTART_CMD"); env && *env) {
             cfg.restart_cmd = env;
