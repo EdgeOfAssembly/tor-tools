@@ -14,7 +14,6 @@ Two simple, dependency-light, modern C++23 command-line programs for advanced To
 ## Design goals (why these exist)
 - Maximum flexibility for power users who want to pin or bias node selection far beyond what Tor does by default.
 - Work on **any modern Linux** (Ubuntu + systemd, Debian, Fedora, Arch, Gentoo + OpenRC, etc.).
-- **No** baked-in assumption that `password.txt` or Gentoo paths are present for normal users.
 - Single-file, easy to compile and deploy (`g++ -std=c++23`).
 
 ## Building
@@ -129,13 +128,11 @@ Cookie auth works if:
 - `Makefile`
 - `tor_control.1`, `tor_top.1` — man pages (install with your distro's tools or `install -m 644 ... /usr/local/share/man/man1/`)
 - `progress_bar.h` — small ANSI progress bar helper (used by tor_top during data fetch)
-- `README.md`, `SESSION_HANDOFF.md` — this documentation and resumption notes
-- `password.txt` — **only** for the original development machine's sudo sessions. Never required or read by default for end users.
+- `README.md`,  — this documentation
 
 ## Documentation
 
 - Run `man tor_control` and `man tor_top` after installing the .1 files.
-- `SESSION_HANDOFF.md` contains a detailed snapshot of the current state, recent decisions (especially bandwidth sources and scaling), testing methods (including Xvfb for visual verification), and open items. Use it to resume work in a future session.
 
 ## License / spirit
 
