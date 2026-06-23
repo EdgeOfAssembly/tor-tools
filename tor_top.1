@@ -1,0 +1,53 @@
+.TH TOR_TOP 1 "June 2026" "Tor Tools" "User Commands"
+.SH NAME
+tor_top \- top-like live viewer for the fastest Tor relays (plain ANSI)
+.SH SYNOPSIS
+.B tor_top
+[\fB--top\fR \fIN\fR] [\fB--interval\fR \fISECONDS\fR] [\fIOTHER OPTIONS\fR]
+.SH DESCRIPTION
+\fBtor_top\fR is a modern C++23 "top" program for Tor relays. It uses only plain ANSI escape sequences (no ncurses) and runs in an alternate screen buffer so that scrolling your terminal does not leave behind duplicate or stale copies of the view.
+.PP
+It always keeps a header line visible at the top. The number of data rows is automatically capped based on terminal height (targeting classic 80x24 terminals such as LXTerm) so the header never scrolls off the top of the visible area.
+.PP
+Data is fetched from the official Onionoo service when possible (rich observed bandwidth + country codes, matching the behavior of the original tor_top). It falls back to a local parse of the Tor consensus (cached-microdesc-consensus) + geoip database when Onionoo is unavailable or slow. A progress bar is shown during the fetch phase so the program never appears to hang.
+.SH OPTIONS
+.TP
+\fB--top\fR \fIN\fR, \fB-n\fR \fIN\fR
+Maximum number of relays to display (default 30). The actual number shown is also limited by terminal height so the header stays visible.
+.TP
+\fB--interval\fR \fISECONDS\fR, \fB-i\fR \fISECONDS\fR
+How often to refresh the display (default 15). Minimum is 5.
+.TP
+\fB--min-bw\fR \fIN\fR
+Only show relays whose (consensus or observed) bandwidth is at least N (in the internal scaled units).
+.TP
+\fB--help\fR, \fB-h\fR
+Show brief usage.
+.SH KEY BINDINGS
+.TP
+q or Ctrl-C
+Quit immediately and restore the terminal (cursor is shown, alternate screen buffer is left).
+.SH DATA SOURCES
+See the README.md file in the project for a detailed explanation of the two sources:
+- Onionoo observed_bandwidth (preferred when available) — the "classic" self-reported high-speed numbers.
+- Local consensus w Bandwidth + geoip fallback — the values Tor itself uses for circuit selection, with real country codes from the system's geoip database.
+.PP
+Both are correct but measure different things. The program prefers the style of numbers that the original tor_top produced.
+.SH ENVIRONMENT
+.TP
+\fBTOR_CONTROL_PASSWORD\fR
+Optional password for direct control-port access (rarely needed for tor_top).
+.TP
+\fBTOR_DATA_DIR\fR
+Override the Tor data directory used for the local consensus fallback.
+.SH FILES
+.TP
+/var/lib/tor/data/cached-microdesc-consensus
+Used by the local fallback.
+.TP
+/usr/share/tor/geoip
+Used for country-code lookup in the local fallback.
+.SH SEE ALSO
+tor(1), tor_control(1), the project's README.md and SESSION_HANDOFF.md.
+.SH AUTHOR
+Part of a pair of small, auditable, single-file C++23 tools for power users who want precise control over Tor path selection without heavy external dependencies.

@@ -1,0 +1,72 @@
+.TH TOR_CONTROL 1 "June 2026" "Tor Tools" "User Commands"
+.SH NAME
+tor_control \- advanced Tor control and configuration tool
+.SH SYNOPSIS
+.B tor_control
+[\fIOPTIONS\fR] \fICOMMAND\fR [\fIARGS\fR]
+.SH DESCRIPTION
+\fBtor_control\fR is a modern C++23 command-line tool for controlling and configuring a running Tor instance with maximum flexibility.
+.PP
+It supports both live control-port operations and persistent changes via /etc/tor/torrc (using sudo for privileged writes and restarts).
+It works on any modern Linux (systemd, OpenRC, etc.) without assuming Gentoo-specific paths or a password.txt file for normal use.
+.SH OPTIONS
+.TP
+\fB--control-host\fR, \fB--control-port\fR
+Tor control port (default 127.0.0.1:9051).
+.TP
+\fB--control-password\fR \fIPASS\fR
+Password for AUTHENTICATE (recommended). Can also be set via the TOR_CONTROL_PASSWORD environment variable.
+.TP
+\fB--data-dir\fR \fIPATH\fR, \fB--torrc\fR \fIPATH\fR, \fB--geoip-file\fR \fIPATH\fR, \fB--cookie-file\fR \fIPATH\fR
+Override Tor paths (useful for custom installations).
+.TP
+\fB--restart-cmd\fR \fI"command"\fR
+Command to run after "sudo " when restarting Tor (default "systemctl restart tor").
+Can also be set via the TOR_RESTART_CMD environment variable.
+.TP
+\fB--top\fR \fIN\fR, \fB--min-bw\fR \fIN\fR, \fB--country\fR \fICC,CC\fR, \fB--exit\fR, \fB--guard\fR, \fB--fast\fR, \fB--stable\fR, \fB--strict\fR
+Filters used by list-nodes, generate-torrc, build-circuit, and apply.
+.TP
+\fB--dry-run\fR, \fB--verbose\fR, \fB--no-sudo\fR
+Safety and debugging options.
+.TP
+\fB--help\fR
+Show full usage and examples.
+.SH COMMANDS
+.TP
+\fBstatus\fR
+Show Tor version, bootstrap status, and control connection info.
+.TP
+\fBlist-nodes\fR
+List relays from the current consensus (or live GETINFO), sorted by bandwidth. Supports all the filter options above.
+.TP
+\fBgenerate-torrc\fR
+Emit a ready-to-use torrc snippet (EntryNodes / ExitNodes / StrictNodes / ExcludeNodes etc.) based on the filters you provide.
+.TP
+\fBapply\fR [\fIfile\fR]
+Write a torrc (via sudo) and optionally restart Tor. If no file is given, a snippet is generated on the fly from the current filter options.
+.TP
+\fBrestart\fR
+Restart the Tor daemon using the configured --restart-cmd (via sudo).
+.TP
+\fBnewnym\fR
+Request fresh circuits (SIGNAL NEWNYM).
+.TP
+\fBbuild-circuit\fR
+Manually extend a circuit using the current filters and random selection from qualifying relays (EXTENDCIRCUIT).
+.TP
+\fBlist-circuits\fR, \fBgetinfo\fR \fIkey\fR, \fBsetconf\fR ...
+Low-level control-port helpers.
+.SH EXAMPLES
+See the full examples in the README.md or run \fBtor_control --help\fR.
+.SH ENVIRONMENT
+.TP
+\fBTOR_CONTROL_PASSWORD\fR
+Password used for control port authentication.
+.TP
+\fBTOR_RESTART_CMD\fR
+Full command (without leading "sudo ") used for restarts.
+.SH SEE ALSO
+tor(1), tor_control(1) man page (this document), the project's README.md and SESSION_HANDOFF.md.
+.SH AUTHOR
+Written as a modern, portable, single-file C++23 replacement for heavy Python tools (e.g. stem) when maximum control and simplicity are desired.
