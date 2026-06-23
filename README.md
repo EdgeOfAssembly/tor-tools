@@ -33,8 +33,6 @@ make
 
 ### Authentication (recommended for normal users)
 
-Do **not** rely on `password.txt`. Instead:
-
 ```bash
 # One-time setup (run as the tor user or root)
 tor --hash-password "MySecretPass123" >> /etc/tor/torrc
